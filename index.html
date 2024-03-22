@@ -1,58 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Power Plants Map</title>
-    <meta charset="utf-8" />
-   
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-     <style>
-        #mapid { 
-          width: 100%; 
-          height: 90vh; 
-          margin: 0 auto;
-       }
-       h1 {
-        text-align: center;
-        font-family: Arial, sans-serif;
-        color: #0078A8;
-        margin-bottom: 20px;
-    }
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+    <style>
+        #map {
+            width: 70%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        #slider-container {
+            position: absolute;
+            bottom: 20px; /* Distance from the bottom of the nearest positioned ancestor */
+            left: 50%; /* Position the left edge of the slider container in the middle of the ancestor */
+            transform: translateX(-50%); /* Shift the slider container back to the left by half its width */
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 3; /* Adjust as needed to ensure it's above the map */
+        }
+
+        #sidebar {
+            position: absolute;
+            width: 30%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: auto;
+            background: white;
+            z-index: 3; 
+            display: none; /* Initially hidden */
+        }
     </style>
 </head>
 <body>
-  <h1>Global Power Plants Map</h1>  
-  <div id="mapid"></div>
-
+    <div id="sidebar">
+      <!-- Information about the power plant will be displayed here -->
+    </div>
+    <div id="map"></div>
+    <div id="slider-container">
+      <input type="range" id="capacity-slider" min="0" max="10000" step="10" value="0">
+      <p>Minimum Capacity: <span id="capacity-value">0</span> MW</p>
+    </div>  
     <script>
-        var map = L.map('mapid', {
-          	center: [0, 0], // Center the map at the start
-          	zoom: 2 // Set the initial zoom level
+        mapboxgl.accessToken = 'pk.eyJ1Ijoiam9uYXRoYW53ZXN0YmVycnkiLCJhIjoiY2x0OWR4Z3k4MGg2dTJpcDlwc2o0ZXFvayJ9.Muok1VdFLcaVekq6lWlzrA';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11', // Using Mapbox Streets as the style
+            center: [0, 0], // Center of the map
+            zoom: 1 // World view
         });
 
-      var topoTiles = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      		            maxZoom: 17,
-      					attribution: 'Basemap data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Basemap style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-      }).addTo(map);
+        map.on('load', function () {
+            map.addSource('powerPlants', {
+                type: 'geojson',
+                data: 'modified_power_plant_data.geojson'
+            });
 
-        function onEachPowerPlant(feature, layer) {
-           if (feature.properties && feature.properties.name) {
-              layer.bindTooltip(feature.properties.name);
-           }
+            map.addLayer({
+                id: 'plant-points',
+                type: 'circle',
+                source: 'powerPlants',
+                paint: {
+                    'circle-radius': 4, // Radius of the circle
+                    'circle-color': '#ff0000' // Color of the circle, red for visibility
+                }
+            });
+
+            updateCapacityFilter(document.getElementById('capacity-slider').value);
+        });
+
+        function updateCapacityFilter(minCapacity) {
+            const capacityValue = parseFloat(minCapacity);
+            console.log('Updating filter with capacity:', capacityValue, 'Type:', typeof capacityValue);
+            document.getElementById('capacity-value').textContent = minCapacity;
+            map.setFilter('plant-points', ['>=', ['get', 'capacity_mw'], capacityValue]);
         }
 
-      $.getJSON("https://raw.githubusercontent.com/berry714/Global-Power-Plants/c52a0d60ebbaf54b84fb8e43db0901a2d546a337/power_plant_data.geojson",
-                  function(data) {
-                      L.geoJSON(data, {
-       				    style: function(feature) {
-                          return { className: 'power-plant' };
-                        },
-                        onEachFeature: onEachPowerPlant        							                
-                      }).addTo(map);
-                  }
-        			
-      );
-    </script>
+        document.getElementById('capacity-slider').addEventListener('input', function(e) {
+            updateCapacityFilter(e.target.value);
+        });
+
+        // Click event to display sidebar information
+        map.on('click', 'plant-points', function (e) {
+            var feature = e.features[0];
+            var properties = feature.properties;
+            var sidebarContent = `
+                <h1>${properties.name}</h1>
+                <p><strong>Country:</strong> ${properties.country_long}</p>
+                <p><strong>Capacity (MW):</strong> ${properties.capacity_mw}</p>
+                <p><strong>Fuel:</strong> ${properties.primary_fuel}</p>
+                <p><strong>Source:</strong> ${properties.source}</p>
+                <p><a href="${properties.url}" target="_blank">More Info</a></p>
+            `;
+
+            document.getElementById('sidebar').innerHTML = sidebarContent;
+            document.getElementById('sidebar').style.display = 'block';
+        });
+
+        // Hover event to display power plant name
+        var popup = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false
+        });
+
+        map.on('mouseenter', 'plant-points', function (e) {
+            map.getCanvas().style.cursor = 'pointer';
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var description = e.features[0].properties.name;
+
+            // Ensure that if the map is zoomed out such that multiple
+            // copies of the feature are visible, the popup appears
+            // over the copy being pointed to.
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+
+            popup.setLngLat(coordinates).setHTML(description).addTo(map);
+        });
+
+        map.on('mouseleave', 'plant-points', function () {
+            map.getCanvas().style.cursor = '';
+            popup.remove();
+        });
+    </script>  
 </body>
 </html>
