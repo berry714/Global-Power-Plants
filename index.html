@@ -105,10 +105,18 @@
             <option value="all">All Fuel Types</option>
             <option value="Biomass">Biomass</option>
             <option value="Coal">Coal</option>
+            <option value="Cogeneration">Cogeneration</option>
             <option value="Gas">Gas</option>
-            <option value="Oil">Oil</option>
+            <option value="Geothermal">Geothermal</option>
             <option value="Hydro">Hydro</option>
+            <option value="Nuclear">Nuclear</option>
+            <option value="Oil">Oil</option>
+            <option value="Petcoke">Petcoke</option>
             <option value="Solar">Solar</option>
+            <option value="Storage">Storage</option>
+            <option value="Waste">Waste</option>
+            <option value="Wave and Tidal">Wave and Tidal</option>
+            <option value="Wind">Wind</option>
             <option value="Other">Other</option>
         </select>
     </div>
@@ -121,152 +129,25 @@
     </div>  
     <div id="legend" style="position: absolute; bottom: 50px; right: 50px; background: white; padding: 10px; border-radius: 5px; z-index: 3;">
         <h4>Primary Fuel Type</h4>
-        <div><span style="background-color: #800080; width: 24px; height: 12px; display: inline-block;"></span> Biomass</div>
-        <div><span style="background-color: #000000 ; width: 24px; height: 12px; display: inline-block;"></span> Coal</div>
-        <div><span style="background-color: #2ca02c; width: 24px; height: 12px; display: inline-block;"></span> Gas</div>
-        <div><span style="background-color: #8B4513; width: 24px; height: 12px; display: inline-block;"></span> Oil</div>
-        <div><span style="background-color: #1f77b4; width: 24px; height: 12px; display: inline-block;"></span> Hydro</div>
-        <div><span style="background-color: #ff7f0e; width: 24px; height: 12px; display: inline-block;"></span> Solar</div>
-        <div><span style="background-color: #d62728; width: 24px; height: 12px; display: inline-block;"></span> Other</div>
+        <div><span style="background-color: #006400; width: 24px; height: 12px; display: inline-block;"></span> Biomass</div>
+        <div><span style="background-color: #6f7d8b; width: 24px; height: 12px; display: inline-block;"></span> Coal</div>
+        <div><span style="background-color: #008080; width: 24px; height: 12px; display: inline-block;"></span> Cogeneration</div>
+        <div><span style="background-color: #87CEEB; width: 24px; height: 12px; display: inline-block;"></span> Gas</div>
+        <div><span style="background-color: #800080; width: 24px; height: 12px; display: inline-block;"></span> Geothermal</div>
+        <div><span style="background-color: #0000CD; width: 24px; height: 12px; display: inline-block;"></span> Hydro</div>
+        <div><span style="background-color: #8fa833; width: 24px; height: 12px; display: inline-block;"></span> Nuclear</div>
+        <div><span style="background-color: #000000; width: 24px; height: 12px; display: inline-block;"></span> Oil</div>
+        <div><span style="background-color: #36454F; width: 24px; height: 12px; display: inline-block;"></span> Petcoke</div>
+        <div><span style="background-color: #FFD700; width: 24px; height: 12px; display: inline-block;"></span> Solar</div>
+        <div><span style="background-color: #fb95ff; width: 24px; height: 12px; display: inline-block;"></span> Storage</div>
+        <div><span style="background-color: #8B4513; width: 24px; height: 12px; display: inline-block;"></span> Waste</div>
+        <div><span style="background-color: #00FFFF; width: 24px; height: 12px; display: inline-block;"></span> Wave and Tidal</div>
+        <div><span style="background-color: #FF7F50; width: 24px; height: 12px; display: inline-block;"></span> Wind</div>
+        <div><span style="background-color: #b61e2b; width: 24px; height: 12px; display: inline-block;"></span> Other</div>
         
         
         <!-- Add more entries as necessary -->
     </div> 
-    <script>
-        mapboxgl.accessToken = 'pk.eyJ1Ijoiam9uYXRoYW53ZXN0YmVycnkiLCJhIjoiY2x0OWR4Z3k4MGg2dTJpcDlwc2o0ZXFvayJ9.Muok1VdFLcaVekq6lWlzrA';
-        const map = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/mapbox/streets-v11',
-            center: [0, 0],
-            zoom: 1
-        });
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('visible');
-            // Resize the map to adjust to the sidebar's new state.
-            map.resize();
-        }
-        map.on('load', function() {
-            map.addSource('powerPlants', {
-                type: 'geojson',
-                data: 'modified_power_plant_data.geojson'
-            });
-            map.addLayer({
-                id: 'plant-points',
-                type: 'circle',
-                source: 'powerPlants',
-                paint: {
-                    'circle-radius': 4,
-                    'circle-color': [
-                        'match',
-                        ['get', 'primary_fuel'],
-                        'Hydro', '#1f77b4',
-                        'Solar', '#ff7f0e',
-                        'Gas', '#2ca02c',
-                        'Oil', '#8B4513',
-                        'Biomass', '#800080',
-                        'Other', '#d62728',
-                        'Coal', '#000000',
-                        /* default */ '#7f7f7f'
-                    ],
-                }
-            });
-        });
-
-        map.on('mouseenter', 'plant-points', function() {
-            map.getCanvas().style.cursor = 'pointer';
-        });
-        map.on('mouseleave', 'plant-points', function() {
-            map.getCanvas().style.cursor = '';
-        });
-        map.on('click', 'plant-points', function(e) {
-            var feature = e.features[0];
-            var properties = feature.properties;
-            
-            var generationDataContent = '';
-            var estimatedGenerationDataContent = '';
-
-            // Check for generation data
-            if (properties.generation_gwh_2014 ||
-                properties.generation_gwh_2015 ||
-                properties.generation_gwh_2016 ||
-                properties.generation_gwh_2017 ||
-                properties.generation_gwh_2018 ||
-                properties.generation_gwh_2019) {
-                
-                generationDataContent = `
-                    <h2>Generation Data:</h2>
-                    ${properties.generation_gwh_2014 ? `<p><strong>2014:</strong> ${properties.generation_gwh_2014}</p>` : ''}
-                    ${properties.generation_gwh_2015 ? `<p><strong>2015:</strong> ${properties.generation_gwh_2015}</p>` : ''}
-                    ${properties.generation_gwh_2016 ? `<p><strong>2016:</strong> ${properties.generation_gwh_2016}</p>` : ''}
-                    ${properties.generation_gwh_2017 ? `<p><strong>2017:</strong> ${properties.generation_gwh_2017}</p>` : ''}
-                    ${properties.generation_gwh_2018 ? `<p><strong>2018:</strong> ${properties.generation_gwh_2018}</p>` : ''}
-                    ${properties.generation_gwh_2019 ? `<p><strong>2019:</strong> ${properties.generation_gwh_2019}</p>` : ''}
-                `;
-            }
-
-            // Check for estimated generation data
-            if (properties.estimated_generation_gwh_2013 ||
-                properties.estimated_generation_gwh_2014 ||
-                properties.estimated_generation_gwh_2015 ||
-                properties.estimated_generation_gwh_2016 ||
-                properties.estimated_generation_gwh_2017) {
-                
-                estimatedGenerationDataContent = `
-                    <h2>Estimated Generation Data:</h2>
-                    ${properties.estimated_generation_gwh_2013 ? `<p><strong>2013:</strong> ${properties.estimated_generation_gwh_2013}</p>` : ''}
-                    ${properties.estimated_generation_gwh_2014 ? `<p><strong>2014:</strong> ${properties.estimated_generation_gwh_2014} (${properties.estimated_generation_note_2014})</p>` : ''}
-                    ${properties.estimated_generation_gwh_2015 ? `<p><strong>2015:</strong> ${properties.estimated_generation_gwh_2015} (${properties.estimated_generation_note_2015})</p>` : ''}
-                    ${properties.estimated_generation_gwh_2016 ? `<p><strong>2016:</strong> ${properties.estimated_generation_gwh_2016} (${properties.estimated_generation_note_2016})</p>` : ''}
-                    ${properties.estimated_generation_gwh_2017 ? `<p><strong>2017:</strong> ${properties.estimated_generation_gwh_2017} (${properties.estimated_generation_note_2017})</p>` : ''}
-                `;
-            }
-
-            var sidebarContent = `
-                <h1>${properties.name}</h1>
-                <p><strong>Country:</strong> ${properties.country_long} (${properties.country})</p>
-                <p><strong>Capacity (MW):</strong> ${properties.capacity_mw}</p>
-                <p><strong>Primary Fuel:</strong> ${properties.primary_fuel}</p>
-                ${properties.other_fuel1 ? `<p><strong>Secondary Fuel:</strong> ${properties.other_fuel1}</p>` : ''}
-                ${properties.other_fuel2 ? `<p><strong>Tertiary Fuel:</strong> ${properties.other_fuel2}</p>` : ''}
-                ${properties.other_fuel3 ? `<p><strong>Other Fuel:</strong> ${properties.other_fuel3}</p>` : ''}
-                <p><strong>Source:</strong> ${properties.source}</p>
-                ${properties.commissioning_year ? `<p><strong>Commissioning Year:</strong> ${parseInt(properties.commissioning_year)}</p>` : ''}
-                ${generationDataContent}
-                ${estimatedGenerationDataContent}
-                ${properties.url ? `<p><a href="${properties.url}" target="_blank">More Details</a></p>` : ''}
-            `;
-
-            document.getElementById('sidebar').innerHTML = sidebarContent;
-            document.getElementById('sidebar').classList.add('visible');
-            map.resize(); // Ensure the map layout adjusts with the sidebar visible
-        });
-
-        // Close the sidebar when clicking anywhere on the map outside of points
-        map.on('click', function(e) {
-            if (!map.queryRenderedFeatures(e.point, { layers: ['plant-points'] }).length) {
-                document.getElementById('sidebar').classList.remove('visible');
-                map.resize(); // Adjust the map size back after the sidebar is hidden
-            }
-        });
-        document.getElementById('fuel-type-selector').addEventListener('change', function() {
-            var selectedFuel = this.value;
-
-            if (selectedFuel === 'all') {
-                map.setFilter('plant-points', null); // Show all features
-            } else {
-                map.setFilter('plant-points', ['any',
-                    ['==', ['get', 'primary_fuel'], selectedFuel],
-                    ['==', ['get', 'other_fuel1'], selectedFuel],
-                    ['==', ['get', 'other_fuel2'], selectedFuel],
-                    ['==', ['get', 'other_fuel3'], selectedFuel]
-                ]);
-            }
-        });
-        document.getElementById('capacity-slider').addEventListener('input', function(e) {
-            const capacityValue = parseFloat(e.target.value);
-            document.getElementById('capacity-value').textContent = capacityValue;
-            map.setFilter('plant-points', ['>=', ['get', 'capacity_mw'], capacityValue]);
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
