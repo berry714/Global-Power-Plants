@@ -7,127 +7,266 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
         #map {
-            width: 70%;
-            height: 100vh;
             position: absolute;
             top: 0;
-            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100vh;
         }
-        #slider-container {
+        #sidebar {
+            position: fixed;
+            width: 30%;
+            max-width: 400px;
+            height: 100%;
+            top: 0;
+            left: -400px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            z-index: 4;
+            transition: left 0.5s;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        #sidebar.visible {
+            left: 0;
+        }
+        #sidebar a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        #sidebar a:hover {
+            text-decoration: underline;
+        }
+        #fuel-type-filter {
             position: absolute;
-            bottom: 20px; /* Distance from the bottom of the nearest positioned ancestor */
-            left: 50%; /* Position the left edge of the slider container in the middle of the ancestor */
-            transform: translateX(-50%); /* Shift the slider container back to the left by half its width */
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
             background: white;
             padding: 10px;
             border-radius: 5px;
-            z-index: 3; /* Adjust as needed to ensure it's above the map */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
-
-        #sidebar {
+        #slider-container {
             position: absolute;
-            width: 30%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            overflow: auto;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             background: white;
-            z-index: 3; 
-            display: none; /* Initially hidden */
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            z-index: 3;
+        }
+        #legend {
+            position: absolute;
+            bottom: 50px;
+            right: 50px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            z-index: 3;
+        }
+        #legend h4 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        #legend div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        #legend span {
+            width: 24px;
+            height: 12px;
+            display: inline-block;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
     <div id="sidebar">
-      <!-- Information about the power plant will be displayed here -->
+        <button onclick="toggleSidebar()" style="margin:10px;">Close</button>
+        <!-- Information about the power plant will be displayed here -->
     </div>
+    <div id="fuel-type-filter">
+        <select id="fuel-type-selector">
+            <option value="all">All Fuel Types</option>
+            <option value="Biomass">Biomass</option>
+            <option value="Coal">Coal</option>
+            <option value="Gas">Gas</option>
+            <option value="Oil">Oil</option>
+            <option value="Hydro">Hydro</option>
+            <option value="Solar">Solar</option>
+            <option value="Other">Other</option>
+        </select>
+    </div>
+
     <div id="map"></div>
+    
     <div id="slider-container">
-      <input type="range" id="capacity-slider" min="0" max="10000" step="10" value="0">
-      <p>Minimum Capacity: <span id="capacity-value">0</span> MW</p>
+        <input type="range" id="capacity-slider" min="0" max="10000" step="10" value="0">
+        <p>Minimum Capacity: <span id="capacity-value">0</span> MW</p>
     </div>  
+    <div id="legend" style="position: absolute; bottom: 50px; right: 50px; background: white; padding: 10px; border-radius: 5px; z-index: 3;">
+        <h4>Primary Fuel Type</h4>
+        <div><span style="background-color: #800080; width: 24px; height: 12px; display: inline-block;"></span> Biomass</div>
+        <div><span style="background-color: #000000 ; width: 24px; height: 12px; display: inline-block;"></span> Coal</div>
+        <div><span style="background-color: #2ca02c; width: 24px; height: 12px; display: inline-block;"></span> Gas</div>
+        <div><span style="background-color: #8B4513; width: 24px; height: 12px; display: inline-block;"></span> Oil</div>
+        <div><span style="background-color: #1f77b4; width: 24px; height: 12px; display: inline-block;"></span> Hydro</div>
+        <div><span style="background-color: #ff7f0e; width: 24px; height: 12px; display: inline-block;"></span> Solar</div>
+        <div><span style="background-color: #d62728; width: 24px; height: 12px; display: inline-block;"></span> Other</div>
+        
+        
+        <!-- Add more entries as necessary -->
+    </div> 
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoiam9uYXRoYW53ZXN0YmVycnkiLCJhIjoiY2x0OWR4Z3k4MGg2dTJpcDlwc2o0ZXFvayJ9.Muok1VdFLcaVekq6lWlzrA';
         const map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/streets-v11', // Using Mapbox Streets as the style
-            center: [0, 0], // Center of the map
-            zoom: 1 // World view
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [0, 0],
+            zoom: 1
         });
-
-        map.on('load', function () {
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('visible');
+            // Resize the map to adjust to the sidebar's new state.
+            map.resize();
+        }
+        map.on('load', function() {
             map.addSource('powerPlants', {
                 type: 'geojson',
                 data: 'modified_power_plant_data.geojson'
             });
-
             map.addLayer({
                 id: 'plant-points',
                 type: 'circle',
                 source: 'powerPlants',
                 paint: {
-                    'circle-radius': 4, // Radius of the circle
-                    'circle-color': '#ff0000' // Color of the circle, red for visibility
+                    'circle-radius': 4,
+                    'circle-color': [
+                        'match',
+                        ['get', 'primary_fuel'],
+                        'Hydro', '#1f77b4',
+                        'Solar', '#ff7f0e',
+                        'Gas', '#2ca02c',
+                        'Oil', '#8B4513',
+                        'Biomass', '#800080',
+                        'Other', '#d62728',
+                        'Coal', '#000000',
+                        /* default */ '#7f7f7f'
+                    ],
                 }
             });
-
-            updateCapacityFilter(document.getElementById('capacity-slider').value);
         });
 
-        function updateCapacityFilter(minCapacity) {
-            const capacityValue = parseFloat(minCapacity);
-            console.log('Updating filter with capacity:', capacityValue, 'Type:', typeof capacityValue);
-            document.getElementById('capacity-value').textContent = minCapacity;
-            map.setFilter('plant-points', ['>=', ['get', 'capacity_mw'], capacityValue]);
-        }
-
-        document.getElementById('capacity-slider').addEventListener('input', function(e) {
-            updateCapacityFilter(e.target.value);
+        map.on('mouseenter', 'plant-points', function() {
+            map.getCanvas().style.cursor = 'pointer';
         });
-
-        // Click event to display sidebar information
-        map.on('click', 'plant-points', function (e) {
+        map.on('mouseleave', 'plant-points', function() {
+            map.getCanvas().style.cursor = '';
+        });
+        map.on('click', 'plant-points', function(e) {
             var feature = e.features[0];
             var properties = feature.properties;
+            
+            var generationDataContent = '';
+            var estimatedGenerationDataContent = '';
+
+            // Check for generation data
+            if (properties.generation_gwh_2014 ||
+                properties.generation_gwh_2015 ||
+                properties.generation_gwh_2016 ||
+                properties.generation_gwh_2017 ||
+                properties.generation_gwh_2018 ||
+                properties.generation_gwh_2019) {
+                
+                generationDataContent = `
+                    <h2>Generation Data:</h2>
+                    ${properties.generation_gwh_2014 ? `<p><strong>2014:</strong> ${properties.generation_gwh_2014}</p>` : ''}
+                    ${properties.generation_gwh_2015 ? `<p><strong>2015:</strong> ${properties.generation_gwh_2015}</p>` : ''}
+                    ${properties.generation_gwh_2016 ? `<p><strong>2016:</strong> ${properties.generation_gwh_2016}</p>` : ''}
+                    ${properties.generation_gwh_2017 ? `<p><strong>2017:</strong> ${properties.generation_gwh_2017}</p>` : ''}
+                    ${properties.generation_gwh_2018 ? `<p><strong>2018:</strong> ${properties.generation_gwh_2018}</p>` : ''}
+                    ${properties.generation_gwh_2019 ? `<p><strong>2019:</strong> ${properties.generation_gwh_2019}</p>` : ''}
+                `;
+            }
+
+            // Check for estimated generation data
+            if (properties.estimated_generation_gwh_2013 ||
+                properties.estimated_generation_gwh_2014 ||
+                properties.estimated_generation_gwh_2015 ||
+                properties.estimated_generation_gwh_2016 ||
+                properties.estimated_generation_gwh_2017) {
+                
+                estimatedGenerationDataContent = `
+                    <h2>Estimated Generation Data:</h2>
+                    ${properties.estimated_generation_gwh_2013 ? `<p><strong>2013:</strong> ${properties.estimated_generation_gwh_2013}</p>` : ''}
+                    ${properties.estimated_generation_gwh_2014 ? `<p><strong>2014:</strong> ${properties.estimated_generation_gwh_2014} (${properties.estimated_generation_note_2014})</p>` : ''}
+                    ${properties.estimated_generation_gwh_2015 ? `<p><strong>2015:</strong> ${properties.estimated_generation_gwh_2015} (${properties.estimated_generation_note_2015})</p>` : ''}
+                    ${properties.estimated_generation_gwh_2016 ? `<p><strong>2016:</strong> ${properties.estimated_generation_gwh_2016} (${properties.estimated_generation_note_2016})</p>` : ''}
+                    ${properties.estimated_generation_gwh_2017 ? `<p><strong>2017:</strong> ${properties.estimated_generation_gwh_2017} (${properties.estimated_generation_note_2017})</p>` : ''}
+                `;
+            }
+
             var sidebarContent = `
                 <h1>${properties.name}</h1>
-                <p><strong>Country:</strong> ${properties.country_long}</p>
+                <p><strong>Country:</strong> ${properties.country_long} (${properties.country})</p>
                 <p><strong>Capacity (MW):</strong> ${properties.capacity_mw}</p>
-                <p><strong>Fuel:</strong> ${properties.primary_fuel}</p>
+                <p><strong>Primary Fuel:</strong> ${properties.primary_fuel}</p>
+                ${properties.other_fuel1 ? `<p><strong>Secondary Fuel:</strong> ${properties.other_fuel1}</p>` : ''}
+                ${properties.other_fuel2 ? `<p><strong>Tertiary Fuel:</strong> ${properties.other_fuel2}</p>` : ''}
+                ${properties.other_fuel3 ? `<p><strong>Other Fuel:</strong> ${properties.other_fuel3}</p>` : ''}
                 <p><strong>Source:</strong> ${properties.source}</p>
-                <p><a href="${properties.url}" target="_blank">More Info</a></p>
+                ${properties.commissioning_year ? `<p><strong>Commissioning Year:</strong> ${parseInt(properties.commissioning_year)}</p>` : ''}
+                ${generationDataContent}
+                ${estimatedGenerationDataContent}
+                ${properties.url ? `<p><a href="${properties.url}" target="_blank">More Details</a></p>` : ''}
             `;
 
             document.getElementById('sidebar').innerHTML = sidebarContent;
-            document.getElementById('sidebar').style.display = 'block';
+            document.getElementById('sidebar').classList.add('visible');
+            map.resize(); // Ensure the map layout adjusts with the sidebar visible
         });
 
-        // Hover event to display power plant name
-        var popup = new mapboxgl.Popup({
-            closeButton: false,
-            closeOnClick: false
-        });
-
-        map.on('mouseenter', 'plant-points', function (e) {
-            map.getCanvas().style.cursor = 'pointer';
-            var coordinates = e.features[0].geometry.coordinates.slice();
-            var description = e.features[0].properties.name;
-
-            // Ensure that if the map is zoomed out such that multiple
-            // copies of the feature are visible, the popup appears
-            // over the copy being pointed to.
-            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        // Close the sidebar when clicking anywhere on the map outside of points
+        map.on('click', function(e) {
+            if (!map.queryRenderedFeatures(e.point, { layers: ['plant-points'] }).length) {
+                document.getElementById('sidebar').classList.remove('visible');
+                map.resize(); // Adjust the map size back after the sidebar is hidden
             }
-
-            popup.setLngLat(coordinates).setHTML(description).addTo(map);
         });
+        document.getElementById('fuel-type-selector').addEventListener('change', function() {
+            var selectedFuel = this.value;
 
-        map.on('mouseleave', 'plant-points', function () {
-            map.getCanvas().style.cursor = '';
-            popup.remove();
+            if (selectedFuel === 'all') {
+                map.setFilter('plant-points', null); // Show all features
+            } else {
+                map.setFilter('plant-points', ['any',
+                    ['==', ['get', 'primary_fuel'], selectedFuel],
+                    ['==', ['get', 'other_fuel1'], selectedFuel],
+                    ['==', ['get', 'other_fuel2'], selectedFuel],
+                    ['==', ['get', 'other_fuel3'], selectedFuel]
+                ]);
+            }
         });
-    </script>  
+        document.getElementById('capacity-slider').addEventListener('input', function(e) {
+            const capacityValue = parseFloat(e.target.value);
+            document.getElementById('capacity-value').textContent = capacityValue;
+            map.setFilter('plant-points', ['>=', ['get', 'capacity_mw'], capacityValue]);
+        });
+    </script>
 </body>
 </html>
