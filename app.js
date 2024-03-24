@@ -20,7 +20,32 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoiam9uYXRoYW53ZXN0YmVycnkiLCJhIjoiY2x0OWR4Z3k4M
                 type: 'circle',
                 source: 'powerPlants',
                 paint: {
-                    'circle-radius': 4,
+                    // Adjust circle radius based on zoom level and capacity
+                    'circle-radius': [
+                        'interpolate', ['linear'], ['zoom'],
+                        // At zoom level 0, circles start with a radius of 1-5 based on capacity
+                        0, ['step',
+                            ['get', 'capacity_mw'],
+                            1, // Base size for plants with capacity < 10 MW
+                            10, 2, // Size increases at 10 MW
+                            100, 3, // Size increases at 100 MW
+                            500, 4,
+                            1000, 5, // Size increases at 1000 MW
+                            5000, 6,
+                            10000, 7 // Size increases at 10000 MW
+                        ],
+                        // At zoom level 15, increase circle radius significantly based on capacity
+                        15, ['step',
+                            ['get', 'capacity_mw'],
+                            5, // Base size for plants with capacity < 10 MW
+                            10, 10, // Size increases at 10 MW
+                            100, 15, // Size increases at 100 MW
+                            500, 20,
+                            1000, 25, // Size increases at 1000 MW
+                            5000, 30,
+                            10000, 35 // Size increases at 10000 MW
+                        ]
+                    ],
                     'circle-color': [
                         'match',
                         ['get', 'primary_fuel'],
@@ -139,3 +164,12 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoiam9uYXRoYW53ZXN0YmVycnkiLCJhIjoiY2x0OWR4Z3k4M
             document.getElementById('capacity-value').textContent = capacityValue;
             map.setFilter('plant-points', ['>=', ['get', 'capacity_mw'], capacityValue]);
         });
+        document.getElementById('toggle-legend-btn').addEventListener('click', function() {
+            var legend = document.getElementById('legend');
+            if (legend.style.display === "none") {
+                legend.style.display = "block";
+            } else {
+                legend.style.display = "none";
+            }
+        });
+        

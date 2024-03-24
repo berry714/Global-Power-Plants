@@ -46,7 +46,7 @@
         }
         #fuel-type-filter {
             position: absolute;
-            top: 20px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 5;
@@ -57,7 +57,7 @@
         }
         #slider-container {
             position: absolute;
-            bottom: 20px;
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
             background: white;
@@ -67,14 +67,17 @@
             z-index: 3;
         }
         #legend {
+            display: none;
             position: absolute;
-            bottom: 50px;
+            top: 50px;
             right: 50px;
             background: white;
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             z-index: 3;
+            width: 150px;
+            height: 370px;
         }
         #legend h4 {
             margin: 0 0 10px 0;
@@ -100,6 +103,7 @@
         <button onclick="toggleSidebar()" style="margin:10px;">Close</button>
         <!-- Information about the power plant will be displayed here -->
     </div>
+    <button id="toggle-legend-btn" style="position: absolute; top: 15px; right: 50px; z-index: 5;">Toggle Legend</button>
     <div id="fuel-type-filter">
         <select id="fuel-type-selector">
             <option value="all">All Fuel Types</option>
@@ -144,9 +148,6 @@
         <div><span style="background-color: #00FFFF; width: 24px; height: 12px; display: inline-block;"></span> Wave and Tidal</div>
         <div><span style="background-color: #FF7F50; width: 24px; height: 12px; display: inline-block;"></span> Wind</div>
         <div><span style="background-color: #b61e2b; width: 24px; height: 12px; display: inline-block;"></span> Other</div>
-        
-        
-        <!-- Add more entries as necessary -->
     </div> 
     <script src="app.js"></script>
 </body>
