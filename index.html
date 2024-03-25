@@ -5,126 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Power Plants Map</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet" type="text/css">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
-        #map {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100vh;
-        }
-        #sidebar {
-            position: fixed;
-            width: 30%;
-            max-width: 400px;
-            height: 100%;
-            top: 0;
-            left: -400px;
-            overflow-y: auto;
-            background: #f9f9f9;
-            z-index: 4;
-            transition: left 0.5s;
-            padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            line-height: 1.6;
-        }
-        #sidebar.visible {
-            left: 0;
-        }
-        #sidebar a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        #sidebar a:hover {
-            text-decoration: underline;
-        }
-        #fuel-type-filter {
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 5;
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        #slider-container {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            z-index: 3;
-        }
-        #legend {
-            display: none;
-            position: absolute;
-            top: 80px;
-            right: 50px;
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            z-index: 3;
-            width: 150px;
-            height: 370px;
-        }
-        #legend h4 {
-            margin: 0 0 10px 0;
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-        }
-        #legend div {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-        #legend span {
-            width: 24px;
-            height: 12px;
-            display: inline-block;
-            margin-right: 10px;
-        }
-    </style>
 </head>
 <body>
     <div id="sidebar">
         <button onclick="toggleSidebar()" style="margin:10px;">Close</button>
         <!-- Information about the power plant will be displayed here -->
     </div>
-    <button id="toggle-legend-btn" style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; position: absolute; top: 20px; right: 50px; z-index: 5;">Toggle Legend</button>
-    <div id="fuel-type-filter">
-        <select id="fuel-type-selector">
-            <option value="all">All Fuel Types</option>
-            <option value="Biomass">Biomass</option>
-            <option value="Coal">Coal</option>
-            <option value="Cogeneration">Cogeneration</option>
-            <option value="Gas">Gas</option>
-            <option value="Geothermal">Geothermal</option>
-            <option value="Hydro">Hydro</option>
-            <option value="Nuclear">Nuclear</option>
-            <option value="Oil">Oil</option>
-            <option value="Petcoke">Petcoke</option>
-            <option value="Solar">Solar</option>
-            <option value="Storage">Storage</option>
-            <option value="Waste">Waste</option>
-            <option value="Wave and Tidal">Wave and Tidal</option>
-            <option value="Wind">Wind</option>
-            <option value="Other">Other</option>
-        </select>
+    <div id="fuel-type-filters">
+        <h4 class="title" style="text-align: center;">Fuel Types</h4>
+        <div class="checkboxes">
+                <!-- "Select All" Checkbox -->
+                <div><input type="checkbox" id="selectAll" checked><label for="selectAll">Select All</label></div>
+                <!-- Individual fuel type checkboxes -->
+                <div><input type="checkbox" id="Biomass" checked><label for="Biomass"><span class="color-indicator" style="background-color: #006400;"></span> Biomass</label></div>
+                <div><input type="checkbox" id="Coal" checked><label for="Coal"><span class="color-indicator" style="background-color: #6f7d8b;"></span> Coal</label></div>
+                <div><input type="checkbox" id="Cogeneration" checked><label for="Cogeneration"><span class="color-indicator" style="background-color: #008080;"></span> Cogeneration</label></div>
+                <div><input type="checkbox" id="Gas" checked><label for="Gas"><span class="color-indicator" style="background-color: #87CEEB;"></span> Gas</label></div>
+                <div><input type="checkbox" id="Geothermal" checked><label for="Geothermal"><span class="color-indicator" style="background-color: #800080;"></span> Geothermal</label></div>
+                <div><input type="checkbox" id="Hydro" checked><label for="Hydro"><span class="color-indicator" style="background-color: #00ffff;"></span> Hydro</label></div>
+                <div><input type="checkbox" id="Nuclear" checked><label for="Nuclear"><span class="color-indicator" style="background-color: #8fa833;"></span> Nuclear</label></div>
+                <div><input type="checkbox" id="Oil" checked><label for="Oil"><span class="color-indicator" style="background-color: #000000;"></span> Oil</label></div>
+                <div><input type="checkbox" id="Petcoke" checked><label for="Petcoke"><span class="color-indicator" style="background-color: #36454F;"></span> Petcoke</label></div>
+                <div><input type="checkbox" id="Solar" checked><label for="Solar"><span class="color-indicator" style="background-color: #FFD700;"></span> Solar</label></div>
+                <div><input type="checkbox" id="Storage" checked><label for="Storage"><span class="color-indicator" style="background-color: #fb95ff;"></span> Storage</label></div>
+                <div><input type="checkbox" id="Waste" checked><label for="Waste"><span class="color-indicator" style="background-color: #8B4513;"></span> Waste</label></div>
+                <div><input type="checkbox" id="Wave and Tidal" checked><label for="Wave and Tidal"><span class="color-indicator" style="background-color: #0000CD;"></span> Wave and Tidal</label></div>
+                <div><input type="checkbox" id="Wind" checked><label for="Wind"><span class="color-indicator" style="background-color: #FF7F50;"></span> Wind</label></div>
+                <div><input type="checkbox" id="Other" checked><label for="Other"><span class="color-indicator" style="background-color: #b61e2b;"></span> Other</label></div>
+        </div>
+        <h4 class="title" style="text-align: center;">Primary/ Secondary Fuels</h4>
+        <div class="filter-options">
+            <div><input type="checkbox" id="filterPrimary" checked><label for="filterPrimary">Filter by Primary Fuel</label></div>
+            <div><input type="checkbox" id="filterSecondary"><label for="filterSecondary">Include Secondary Fuels</label></div>
+        </div>        
     </div>
 
     <div id="map"></div>
@@ -132,25 +47,11 @@
     <div id="slider-container">
         <input type="range" id="capacity-slider" min="0" max="10000" step="10" value="0">
         <p>Minimum Capacity: <span id="capacity-value">0</span> MW</p>
-    </div>  
-    <div id="legend" style="position: absolute; bottom: 50px; right: 50px; background: white; padding: 10px; border-radius: 5px; z-index: 3;">
-        <h4>Primary Fuel Type</h4>
-        <div><span style="background-color: #006400; width: 24px; height: 12px; display: inline-block;"></span> Biomass</div>
-        <div><span style="background-color: #6f7d8b; width: 24px; height: 12px; display: inline-block;"></span> Coal</div>
-        <div><span style="background-color: #008080; width: 24px; height: 12px; display: inline-block;"></span> Cogeneration</div>
-        <div><span style="background-color: #87CEEB; width: 24px; height: 12px; display: inline-block;"></span> Gas</div>
-        <div><span style="background-color: #800080; width: 24px; height: 12px; display: inline-block;"></span> Geothermal</div>
-        <div><span style="background-color: #0000CD; width: 24px; height: 12px; display: inline-block;"></span> Hydro</div>
-        <div><span style="background-color: #8fa833; width: 24px; height: 12px; display: inline-block;"></span> Nuclear</div>
-        <div><span style="background-color: #000000; width: 24px; height: 12px; display: inline-block;"></span> Oil</div>
-        <div><span style="background-color: #36454F; width: 24px; height: 12px; display: inline-block;"></span> Petcoke</div>
-        <div><span style="background-color: #FFD700; width: 24px; height: 12px; display: inline-block;"></span> Solar</div>
-        <div><span style="background-color: #fb95ff; width: 24px; height: 12px; display: inline-block;"></span> Storage</div>
-        <div><span style="background-color: #8B4513; width: 24px; height: 12px; display: inline-block;"></span> Waste</div>
-        <div><span style="background-color: #00FFFF; width: 24px; height: 12px; display: inline-block;"></span> Wave and Tidal</div>
-        <div><span style="background-color: #FF7F50; width: 24px; height: 12px; display: inline-block;"></span> Wind</div>
-        <div><span style="background-color: #b61e2b; width: 24px; height: 12px; display: inline-block;"></span> Other</div>
-    </div> 
+    </div>
+    
+    <button id="toggle-filters-btn" style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; position: absolute; top: 5px; right: 5px; z-index: 5;">
+        Toggle Filters
+    </button>
     <script src="app.js"></script>
 </body>
 </html>
