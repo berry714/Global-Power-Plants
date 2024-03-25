@@ -15,8 +15,8 @@ body {
     position: fixed; 
     width: 30%; 
     max-width: 400px; 
-    height: 100%; 
-    top: 0; 
+    height: 88%; 
+    bottom: 0; 
     left: -400px; 
     overflow-y: auto; 
     background: #f9f9f9; 
@@ -42,14 +42,14 @@ body {
     align-items: center;
     justify-content: start;
     position: absolute;
-    top: 50px;
+    width: auto;
+    bottom: 60px;
     right: 5px;
     z-index: 5;
     background: white;
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    width: 180px;
 }
 .checkboxes {
     display: flex;
@@ -88,7 +88,7 @@ label {
 #slider-container { 
     position: absolute; 
     width: 100%; 
-    bottom: 35px; 
+    top: 0px; 
     left: 50%; 
     transform: translateX(-50%); 
     background: white; 
