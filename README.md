@@ -1,7 +1,7 @@
 Title: Exploring The World's Power Plants
  Lab 2: Interactive Mapping
 
- ![alt text](link to screenshot in repository).
+ ![alt text](https://raw.githubusercontent.com/berry714/Global-Power-Plants/main/screenshot.png "Exploring The World's Power Plants").
 
  Link to map: https://berry714.github.io/Global-Power-Plants/
 
