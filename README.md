@@ -29,15 +29,10 @@ The interactive map "Exploring The World's Power Plants" aims to visualize the g
 The development of this map followed a structured design process, incorporating iterative phases of design and user feedback, aligned with the principles outlined by Roth (2017) in his article on UI/UX Design within GIS. Initial stages focused on data collection and preparation, and the styling of the power plants layer. Then the integration of interactive elements — such as filters for fuel types and sliders for plant capacity—to enable dynamic user exploration of the dataset. Next (inspired by user feedback) incorporating GHG emissions data as a supplementary layer aimed to enrich the analysis by providing context on environmental impacts. The choice of data and the cartographic stylings were intellectually justified by the aim to present complex datasets in an accessible manner, fostering insights into global energy production dynamics. Colours of point symbols, sorted by fuel type and sized based on capacity (MW), provide a simplified and more accessible way to view the data. I included affordances (Roth, 2017) throughout my map, such as a hover effect changing the cursor style to indicate a point as clickable or as having an associated popup, underlining to indicate an external link, and changing styles of buttons to indicate it as clickable. Along with affordances, feedback was incorporated to signal to the user that an action has occurred as a result of their interaction (Roth, 2017), such as changing the color of the "Countries" or "Filters" button to indicate a layer as active.
 
 Interactivity:
-
 1. Hover effect over all points (change cursor style and show a popup of some limited information)
-
 2. Sidebar popup for power plants station including more detailed information only if it is available for that power plant.
-
 3. A 'Filters' button that toggles the filters panel displaying fuel types and associated symbolization colours as well as a checkbox for each one. This filters panel also includes the option of displaying primary fuel sources and/ or secondary fuel sources, to allow the user freedom in exploring the dataset.
-
 4. A 'Countries' button that toggles on and off a layer of country centroids that are symbolized to reflect their corresponding greenhouse gas emissions, along its legend.
-
 5. A capacity slider that allows the user to control the minimum capacity threshold in MW for power plant stations to be displayed.
 
 
