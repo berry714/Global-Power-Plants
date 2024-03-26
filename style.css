@@ -1,9 +1,12 @@
+/* Set the base font, margins, and padding for the entire document */
 body { 
     font-family: Arial, sans-serif; 
     margin: 0; 
     padding: 0; 
     height: 100%; 
 }
+
+/* Defines the full-screen map container, ensuring the map occupies the entire viewport height and width. */
 #map { 
     position: absolute; 
     top: 0; 
@@ -11,11 +14,59 @@ body {
     width: 100%; 
     height: 100vh; 
 }
+
+/* Styling for the navigation menu. */
+#menu {
+    background: #fff;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    border-radius: 3px;
+    width: 120px;
+    height: 80px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    font-family: 'Open Sans', sans-serif;
+}
+/* Styles the emissions and filters buttons within the menu for a cohesive look, ensuring clear readability and easy interaction. */
+#menu a, #menu button {
+    font-size: 13px;
+    color: #404040;
+    background-color: #fff;
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+    border: none;
+    box-sizing: border-box;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    height: 40px; /* Each element takes up half the menu's total height */
+}
+
+/* Enhances the interactivity by changing the background color on hover, providing visual feedback that each element is clickable. */
+#menu a:hover, #menu button:hover {
+    background-color: #f8f8f8;
+}
+
+/* Visually indicates active state for GHG emissions and filters with a different background color, enhancing UX by showing currently active selections. */
+#menu a.active, #menu button.active {
+    background-color: #3887be;
+    color: #ffffff;
+}
+
+/* Changing the background color on hover. */
+#menu a.active:hover, #menu button.active:hover {
+    background: #3074a4;
+}
+
+/* Defines the off-canvas sidebar for displaying detailed information, ensuring it's easily accessible without cluttering the main map view. */
 #sidebar { 
     position: fixed; 
     width: 30%; 
     max-width: 400px; 
-    height: 88%; 
+    height: 100%; 
     bottom: 0; 
     left: -400px; 
     overflow-y: auto; 
@@ -27,15 +78,43 @@ body {
     border-radius: 5px; 
     line-height: 1.6; 
 }
+
+/* Controls the visibility of the sidebar, sliding it into view when needed. */
 #sidebar.visible { 
-    left: 0; }
+    left: 0; 
+}
+
+/* Ensures links within the sidebar are clearly visible and stylistically distinct, encouraging user interaction. */
 #sidebar a { 
     color: #007bff; 
     text-decoration: none; 
 }
+/* Underline link to indicate that it is clickable */
 #sidebar a:hover { 
     text-decoration: underline; 
 }
+
+#ghgLegend {
+    position: absolute;
+    bottom: 35px;
+    right: 1px;
+    background: rgba(255, 255, 255);
+    padding: 10px;
+    border-radius: 5px;
+    display: none; /* Initially hidden */
+    z-index: 1000; /* Ensure it's above most other elements */
+    color: black; /* Ensure text is visible against a light background */
+}
+
+#ghgLegend div span {
+    height: 10px;
+    width: 20px;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  
+/* Styles the filters panel for user selections, placed for easy accessibility while ensuring it doesn't obstruct the map view. */
 #fuel-type-filters {
     display: flex;
     flex-direction: column;
@@ -43,24 +122,30 @@ body {
     justify-content: start;
     position: absolute;
     width: auto;
-    bottom: 60px;
-    right: 5px;
+    top: 83px;
+    right: 1px;
     z-index: 5;
     background: white;
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
+
+/* Arranges checkboxes vertically as a list */
 .checkboxes {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
 }
+
+/* Aligns checkbox elements with their labels for a clear association. */
 .checkboxes div {
     display: flex;
     align-items: center;
 }
+
+/* Visually represents each fuel type with a corresponding color, facilitating quick identification. */
 .color-indicator {
     display: inline-block;
     width: 24px;
@@ -68,36 +153,39 @@ body {
     margin-right: 10px;
     border-radius: 2px;
 }
+
+/* Organizes filter options into a clear, vertical layout, ensuring that user interactions are intuitive and the interface remains uncluttered. */
 .filter-options {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
 }
-.filter-options div {
-    display: flex; /* Use Flexbox */
-    align-items: center; /* Vertically center the contents */
-}
-.filter-options label {
-    margin-left: 5px; /* Adds some space between the checkbox and the label text */
-}
-label {
+
+/* Set styling for filter labels. */
+.filter-options div, .filter-options label {
     display: flex;
     align-items: center;
+    margin-left: 5px; /* Adds some space between the checkbox and the Primary and Secondary Fuels label text */
 }
+
+/* Positions the capacity slider container prominently at the top of the map. */
 #slider-container { 
     position: absolute; 
-    width: 100%; 
+    width: 300px; 
     top: 0px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    background: white; 
+    right: 50%;
+    transform: translateX(50%);
+    height: 8%;
+    background: rgb(255, 255, 255); 
     padding: 10px; 
     border-radius: 5px; 
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); 
     z-index: 3; 
     box-sizing: border-box; 
 }
+
+/* Ensures the capacity slider fits within its container, allowing users to seamlessly adjust viewing parameters without visual disruption. */
 #capacity-slider { 
     width: calc(100% - 20px); 
     margin: 0; 

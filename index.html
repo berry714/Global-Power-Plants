@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Power Plants Map</title>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet" type="text/css">
+    <title>Exploring Global Power Plants and GHG Emissions</title> <!-- Set the title of the web page -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet"> <!-- Links to the Mapbox GL JS stylesheet -->
+    <link href="style.css" rel="stylesheet" type="text/css"> <!-- Links to my custom stylesheet -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
 </head>
 <body>
-    <div id="sidebar">
+    <!-- Add a sidebar for displaying details about selected power plant -->
+    <div id="sidebar"> 
         <button onclick="toggleSidebar()" style="margin:10px;">Close</button>
-        <!-- Information about the power plant will be displayed here -->
     </div>
-    <div id="fuel-type-filters">
+    <div id="fuel-type-filters"> <!-- Adds filters for selecting power platns by fuel type -->
         <h4 class="title" style="text-align: center;">Fuel Types</h4>
         <div class="checkboxes">
                 <!-- "Select All" Checkbox -->
@@ -27,7 +27,7 @@
                 <div><input type="checkbox" id="Hydro" checked><label for="Hydro"><span class="color-indicator" style="background-color: #00ffff;"></span> Hydro</label></div>
                 <div><input type="checkbox" id="Nuclear" checked><label for="Nuclear"><span class="color-indicator" style="background-color: #8fa833;"></span> Nuclear</label></div>
                 <div><input type="checkbox" id="Oil" checked><label for="Oil"><span class="color-indicator" style="background-color: #000000;"></span> Oil</label></div>
-                <div><input type="checkbox" id="Petcoke" checked><label for="Petcoke"><span class="color-indicator" style="background-color: #36454F;"></span> Petcoke</label></div>
+                <div><input type="checkbox" id="Petcoke" checked><label for="Petcoke"><span class="color-indicator" style="background-color: #d4d4d4;"></span> Petcoke</label></div>
                 <div><input type="checkbox" id="Solar" checked><label for="Solar"><span class="color-indicator" style="background-color: #FFD700;"></span> Solar</label></div>
                 <div><input type="checkbox" id="Storage" checked><label for="Storage"><span class="color-indicator" style="background-color: #fb95ff;"></span> Storage</label></div>
                 <div><input type="checkbox" id="Waste" checked><label for="Waste"><span class="color-indicator" style="background-color: #8B4513;"></span> Waste</label></div>
@@ -37,20 +37,30 @@
         </div>
         <h4 class="title" style="text-align: center;">Primary/ Secondary Fuels</h4>
         <div class="filter-options">
+            <!-- Primary and Secondary fuel checkboxes -->
             <div><input type="checkbox" id="filterPrimary" checked><label for="filterPrimary">Filter by Primary Fuel</label></div>
             <div><input type="checkbox" id="filterSecondary"><label for="filterSecondary">Include Secondary Fuels</label></div>
         </div>        
     </div>
-
+    <!-- Add a legend that only displays when the emissions layer is active -->
+    <div id="ghgLegend">
+        <h4>GHG Emissions (MT CO2 equivalent)</h4>
+        <div><span style="background-color: #006837;"></span> &gt; 1000</div>
+        <div><span style="background-color: #1a9850;"></span> 500 - 1000</div>
+        <div><span style="background-color: #66bd63;"></span> 100 - 500</div>
+        <div><span style="background-color: #a6d96a;"></span> 10 - 100</div>
+        <div><span style="background-color: #d9ef8b;"></span> &lt; 10</div>
+    </div>
+    <!-- Add navigation menu -->
+    <nav id="menu"></nav>
+    <!-- Add map container -->
     <div id="map"></div>
-    
+    <!-- Add slider container -->
     <div id="slider-container">
         <input type="range" id="capacity-slider" min="0" max="10000" step="10" value="0">
         <p>Minimum Capacity: <span id="capacity-value">0</span> MW</p>
     </div>
-    <button id="toggle-filters-btn" style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; position: absolute; bottom: 20px; right: 5px; z-index: 5;">
-        Toggle Filters
-    </button>
+    <!-- Link to my Javascript file -->
     <script src="app.js"></script>
 </body>
 </html>
