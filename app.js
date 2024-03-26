@@ -332,14 +332,14 @@ document.addEventListener('DOMContentLoaded', function () {
             map.setFilter('power-plants', ['>=', ['get', 'capacity_mw'], capacityValue]);
         });
         
-        // Create the "GHG Emissions" button
+        // Create the "Countries" button
         const emissionsLink = document.createElement('a');
-        // Set the text of the emissions layer button
-        emissionsLink.textContent = 'GHG Emissions';
+        // Set the text of the countries layer button
+        emissionsLink.textContent = 'Countries';
         // Set the initial class as empty
         emissionsLink.className = '';
 
-        // Toggle the emissions layer when the emissions button is clicked
+        // Toggle the emissions layer when the countries button is clicked
         emissionsLink.onclick = function (e) {
             // Check if the emissions layer is visible or not and either set the emissionsLink class value to 'active' or to ' '.
             if (map.getLayoutProperty('emissions', 'visibility') === 'visible') {
