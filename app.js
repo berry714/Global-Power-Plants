@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Add click event to open a sidebar containing more detailed information on each power plant
         map.on('click', 'power-plants', function(e) {
-            var properties = feature.properties;
+            var properties = e.features[0].properties;
             var generationDataContent = '';
             var estimatedGenerationDataContent = '';
             
