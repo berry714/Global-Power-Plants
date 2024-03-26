@@ -34,4 +34,5 @@ There are, however, several constraints and potential improvements that could be
 
 
 References
+
 Roth, R. E. (2017). User Interface and User Experience (UI/UX) Design. The Geographic Information Science & Technology Body of Knowledge (2nd Quarter 2017 Edition), John P. Wilson (ed.). DOI: 10.22224/gistbok/2017.2.5Links to an external site..
