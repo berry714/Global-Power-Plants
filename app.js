@@ -1,7 +1,7 @@
 // Wait until the HTML document is fully loaded before running the code.
 document.addEventListener('DOMContentLoaded', function () {
     // Set the access token for Mapbox GL JS.
-    mapboxgl.accessToken = 'pk.eyJ1Ijoiam9uYXRoYW53ZXN0YmVycnkiLCJhIjoiY2x0OWR4Z3k4MGg2dTJpcDlwc2o0ZXFvayJ9.Muok1VdFLcaVekq6lWlzrA';
+    mapboxgl.accessToken = 'pk.eyJ1Ijoiam9uYXRoYW53ZXN0YmVycnkiLCJhIjoiY202dTNwODAyMGFzejJrcTQ1ZHZuN3hkMiJ9._qgwvbFblwbJ10bCAYpoBw';
     
     // Initialize a new Mapbox map.
     const map = new mapboxgl.Map({
